@@ -27,6 +27,13 @@ To generate image of number 5 at inference time, we can set label to be 5, and s
 
 A: After training the model, we may contanerize the model using Docker or other tools so that it the model can be ran across different environments. We can choose a cloud framework such as AWS Sagemaker to host the model. We may construct a data pipeline and develop interfaces such as RESTful API to interact with the model. After deployment, we have to conduct continuous mainetenance, CI/CD tasks, and utilize new data for tuning the model. 
 
+**Q: If you wanted to train with multiple GPUs, 
+what can you do in pytorch lightning to make sure data is allocated to the correct GPU?**
+
+A: Assuming we are using CUDA, we may pass the gpus we want to use into the Trainer's instantiation, e.g. 
+trainer = Trainer(gpus=[0, 1, 5], device = 'cuda')
+
+This way we are only using the gpus number 0, 1, 5. Or we may override the configurations at command line using trainer.gpus=[0,1,5]
 
 ## Difficulties 
 
@@ -34,7 +41,7 @@ A: After training the model, we may contanerize the model using Docker or other 
 2. I was unfamiliar with the syntax for the Hydra configuration files and cannot link the config files to the model functions, [this helped.](https://omegaconf.readthedocs.io/en/2.1_branch/usage.html#config-node-interpolation)
 3. When I was reading through the source code to the model, I see that the discriminator lacked a sigmoid function to map its output into probability. Upon adding the sigmoid, the model still gave similar results but the run time was much slower. I suspect that it was taken away originally to save computational time.
 4. The wandb image logger expects a channel last image array while pytorch supplies a channel-first image array. I rearranged the axes using `torch.permute()`.
-   
+
 ## Training Results
 With 20 epochs I was able to produce this result
 ![Generator Output at epoch 20](images/result.png)
@@ -46,6 +53,101 @@ And the loss curves for the generator and the discriminator as follows:
 
 ![Validation Generator Loss](images/val_gen.png)
 ![Validation Discriminator Loss](images/val_disc.png)
+
+
+
+## Answers to Chatbot Assignment
+I chose to compare the three following LLMs:
+
+1. CohereForAI/c4ai-command-r-plus
+2. meta-llama/Meta-Llama-3-70B-Instruct
+3. mistralai/Mistral-7B-Instruct-v0.2
+
+### Content Quality
+We assess content quality with these areas: **Reasoning, Math**, **Coding** and **New Info**
+
+#### Reasoning
+I gave a reasoning puzzle for the chatbots to solve:
+> There are three killers in a room originally. A person goes into the room and kills someone in the room. How many killers are there in the room now? Explain your answer.
+
+Answers from R+ is the most concise and correct.
+>There are still three killers in the room. The person who went into the room is also a killer, as they have killed someone.
+
+Answer from Llama 3 is correct but not as efficiently conveyed:
+<blockquote>
+A classic lateral thinking puzzle!
+   
+At first glance, it seems like a simple arithmetic problem: 3 killers - 1 person killed = 2 killers. But wait, there's a twist!
+
+The person who went into the room and killed someone is also a killer. So, we need to count them as a killer too.
+
+Initially, there were 3 killers in the room. One of them got killed, leaving 2 original killers. But now, we have a new killer who entered the room and committed a murder. Therefore, there are still 3 killers in the room.
+
+The answer is: there are still 3 killers in the room.
+</blockquote>
+
+Answer from Mistral 7B is correct but the steps were largely redundant. Notice point 2 is entirely omittable in this question.
+<blockquote>
+Clever question!
+
+Initially, there are three killers in the room.
+
+A person goes into the room and kills someone. Let's call the person who entered the room "X".
+
+There are two possible scenarios:
+
+1. X kills one of the original three killers. In this case, there are still three killers in the room: the two remaining original killers and X, who has now become a killer.
+2. X kills a non-killer (which is not possible, since there were only three people in the room, and all three were killers). But let's assume this scenario for the sake of argument. In this case, there would be two killers left in the room: the two remaining original killers.
+
+In either scenario, there are still three killers in the room: either the two remaining original killers and X, or the two remaining original killers and X, who has now become a killer.
+
+So, the answer is: there are still three killers in the room.
+</blockquote>
+
+**Command R+** Wins in reasoning.
+
+#### Coding 
+I asked all of them to program Snake in python. For consistency sake I ask all of them to code with the python curses library. I gave them 5 tries, if the program returns an error I reported it to them for fixes.
+
+Command R+ fails all 5 tries. 
+
+Llama 3 produced a non-working program initially, after reporting the error for it to fix for 3 times it worked.
+![llama 3 produced Snake] ()
+
+Mistral 7B produces a working program at first, but is buggy. In five tries, it is almost able to produce the snake game, but the game still exits randomly.
+![Mistral produced Snake] ()
+
+**Llama 3** wins in Coding.
+
+#### Knowledge Cutoff
+I asked them when their knowledge cutoff is, and asked them the population of Hong Kong now. 
+With web search all of them produces similar results, they all cited two sources, 7.5M and 7.685M respectively.
+Without web search, R+ and Mistral gave results from Jan 2023, Llama gave results from mid 2022 firstly, but after prompting for newer sources it was able to give me the Jan 2023 source as well.
+
+Asking them their knowledge cutoffs, R+ gave Jan 2023. Llama 3 gave 2021, yet upon searching I found that it was until Dec 2023. Mistral gave Dec 2022 yet upon search I fonud that it was trained until Dec 2023. It may be that HuggingChat uses an earlier snapshot of these models?
+
+**Command R+** wins knowledge cutoff
+
+
+#### Maths 
+I took a question from the DSE Maths Exam about Linear Inequalities.
+<blockquote>
+The straight lines L1, L2, are perpendicular to each other, The y intercept of L1 is 3. It is given that L1 and L2 intersects at point (2, 6), Let R be the region bounded by L1, L2 (the region includes the boundary) and the x-axis. Give the system of linear inequalities of R. 
+</blockquote>
+
+Command R+ gave a perfect answer with steps.
+![Command R Maths]()
+Llama 3 gave a wrong answer, note the wrong signs of the first inequality and the incorrect values at the second.
+![Llama 3 Maths]()
+Mistral 7B almost gave a correct answer, but the signs were incorrect.
+![Mistral 7B Maths]()
+
+**Command R+** wins maths
+
+
+For Content Quality, Command R+ Wins
+
+
 
 ## What is all this?
 This "programming assignment" is really just a way to get you used to
@@ -151,10 +253,6 @@ What are these inputs and how could they be used at inference time to generate a
 * If you wanted to train with multiple GPUs, 
 what can you do in pytorch lightning to make sure data is allocated to the correct GPU? 
 
-Assuming we are using CUDA, we may pass the gpus we want to use into the Trainer's instantiation, e.g. 
-trainer = Trainer(gpus=[0, 1, 5], device = 'cuda')
-
-This way we are only using the gpus number 0, 1, 5. Or we may override the configurations at command line using trainer.gpus=[0,1,5]
 
 ## Submission
 
