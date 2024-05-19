@@ -54,7 +54,8 @@ And the loss curves for the generator and the discriminator as follows:
 ![Validation Generator Loss](images/val_gen.png)
 ![Validation Discriminator Loss](images/val_disc.png)
 
-
+## Bonus Part Answers
+**I have also tried two bonus modifications. Please see the 'bonus' branch of this repository.**
 
 ## Answers to Chatbot Assignment
 I chose to compare the three following LLMs:
