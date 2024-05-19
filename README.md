@@ -55,6 +55,18 @@ And the loss curves for the generator and the discriminator as follows:
 ![Validation Discriminator Loss](images/val_disc.png)
 
 
+## Open-ended additions
+1. First I changed the loss objective into Binary Cross Entropy Loss and added the sigmoid function to the discriminator, however, the training time increase and the loss increased also. I terminated the training at epoch 10 and here are the results (orange: original, purple: new BCE loss version)
+
+![bceloss](images/BCELoss.png)
+
+
+2. Then I tried to change the architecture of the Generator and the Discriminator, I built a lightweight CNN model with only three convolutional layers at both generator and discriminator. I trained for 10 epochs. The training time almost doubled, but the quality of the images is even more refined than the 20 epochs results of the original. In addition, the CPU temperature on my machine is significantly lower. However, the loss seemed to increase. 
+
+![CNN1](images/cnn1.png)
+![loss](images/losscomp.png)
+![power](images/powercomp.png)
+![time](images/timecomp.png)
 
 ## Answers to Chatbot Assignment
 I chose to compare the three following LLMs:

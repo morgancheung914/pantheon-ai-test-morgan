@@ -63,7 +63,8 @@ class MNISTGANModel(LightningModule):
         #     : to keep a track of which network is being optimised.
 
         imgs, labels = batch
-
+        
+        
         batch_size = imgs.shape[0]
 
         log_dict = {}

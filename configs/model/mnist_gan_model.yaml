@@ -13,14 +13,14 @@ img_size: 32
 
 #redirect to generator and discriminator files
 generator: 
-  _target_: src.models.modules.generators.Generator
+  _target_: src.models.modules.generators.CNNGenerator
   n_classes: ${..n_classes}
   latent_dim: ${..latent_dim}
   channels: ${..channels}
   img_size: ${..img_size}
 
 discriminator: 
-  _target_: src.models.modules.discriminators.Discriminator
+  _target_: src.models.modules.discriminators.CNNDiscriminator
   n_classes: ${..n_classes}
   channels: ${..channels}
   img_size: ${..img_size}
