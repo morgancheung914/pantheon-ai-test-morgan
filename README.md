@@ -86,22 +86,9 @@ Initially, there were 3 killers in the room. One of them got killed, leaving 2 o
 The answer is: there are still 3 killers in the room.
 </blockquote>
 
-Answer from Mistral 7B is correct but the steps were largely redundant. Notice point 2 is entirely omittable in this question.
+Answer from Mistral 7B is incorrect.
 <blockquote>
-Clever question!
-
-Initially, there are three killers in the room.
-
-A person goes into the room and kills someone. Let's call the person who entered the room "X".
-
-There are two possible scenarios:
-
-1. X kills one of the original three killers. In this case, there are still three killers in the room: the two remaining original killers and X, who has now become a killer.
-2. X kills a non-killer (which is not possible, since there were only three people in the room, and all three were killers). But let's assume this scenario for the sake of argument. In this case, there would be two killers left in the room: the two remaining original killers.
-
-In either scenario, there are still three killers in the room: either the two remaining original killers and X, or the two remaining original killers and X, who has now become a killer.
-
-So, the answer is: there are still three killers in the room.
+Initially, there are three killers in the room. When a new person enters the room and commits a murder, the total number of killers in the room increases by one. So, the final count of killers in the room is four. One important thing to clarify here is that the original three killers remain killers regardless of whether they have killed again or not. Once someone has taken a life, they retain that status as a killer even if they don't continue killing afterwards. Additionally, the new person entering the room becomes a killer upon taking a life. Hence, the total number of killers in the room is now four.
 </blockquote>
 
 **Command R+** Wins in reasoning.
@@ -112,19 +99,19 @@ I asked all of them to program Snake in python. For consistency sake I ask all o
 Command R+ fails all 5 tries. 
 
 Llama 3 produced a non-working program initially, after reporting the error for it to fix for 3 times it worked.
-![llama 3 produced Snake] ()
 
-Mistral 7B produces a working program at first, but is buggy. In five tries, it is almost able to produce the snake game, but the game still exits randomly.
-![Mistral produced Snake] ()
+![llama 3 produced Snake](images/llama_3_snake.png)
+
+Mistral 7B fails to produce any coherent snake program.
 
 **Llama 3** wins in Coding.
 
 #### Knowledge Cutoff
 I asked them when their knowledge cutoff is, and asked them the population of Hong Kong now. 
 With web search all of them produces similar results, they all cited two sources, 7.5M and 7.685M respectively.
-Without web search, R+ and Mistral gave results from Jan 2023, Llama gave results from mid 2022 firstly, but after prompting for newer sources it was able to give me the Jan 2023 source as well.
+Without web search, R+ gave results from Jan 2023, Llama gave results from mid 2022 firstly, but after prompting for newer sources it was able to give me the Jan 2023 source as well. Mistral gave info from 2021.
 
-Asking them their knowledge cutoffs, R+ gave Jan 2023. Llama 3 gave 2021, yet upon searching I found that it was until Dec 2023. Mistral gave Dec 2022 yet upon search I fonud that it was trained until Dec 2023. It may be that HuggingChat uses an earlier snapshot of these models?
+Asking them their knowledge cutoffs, R+ gave Jan 2023. Llama 3 gave 2021, yet upon searching I found that it was until Dec 2023. Mistral gave 2021 yet upon search I fonud that it was trained until Dec 2023. It may be that HuggingChat uses an earlier snapshot of these models?
 
 **Command R+** wins knowledge cutoff
 
@@ -136,17 +123,68 @@ The straight lines L1, L2, are perpendicular to each other, The y intercept of L
 </blockquote>
 
 Command R+ gave a perfect answer with steps.
-![Command R Maths]()
+
+![Command R Maths](images/R+_maths.png)
+
+
 Llama 3 gave a wrong answer, note the wrong signs of the first inequality and the incorrect values at the second.
-![Llama 3 Maths]()
-Mistral 7B almost gave a correct answer, but the signs were incorrect.
-![Mistral 7B Maths]()
+
+![Llama 3 Maths](images/llama_math.png)
+
+
+Mistral 7B gave a wrong answer, and even denied that there were a definitive solution
+
+![Mistral 7B Maths](images/mistral_math.png)
+
+
 
 **Command R+** wins maths
 
 
 For Content Quality, Command R+ Wins
 
+
+### Contextual Understanding
+I took ideas from this paper: [Natural Language Inference in Context - Investigating Contextual Reasoning over Long Texts (Liu et al. 2020)](https://arxiv.org/pdf/2011.04864). I used an example from the ConTRoL dataset. It features a paragraph of text supplied to the LLM (the premise), and some hypotheses about the text to be answered with three choices: logical entailment, contradiction, or neutral. The example is as below:
+<blockquote>
+This passage provides information on the subsidising of renewable energy and its effect on the usage of fossil fuels. The issue of subsidising sources of renewable energy came to the forefront of global politics as record emissions levels continue to be reached despite caps on carbon emissions being agreed up by several global powers. However, renewable energy sources tend more expensive than their fossil-fuel counter parts. In this way, renewable energy cannot be seen as a realistic alternative to fossil-fuel until it is at a price universally achievable. On the opposite side of the spectrum, commentators note that the average temperature is expected to rise by four degrees by the end of the decade. In order to prevent this, they suggest carbon emissions must be reduced by seventy per cent by 2050. Such commentators advocate government subsidised renewable energy forms as a way to achieve this target.
+</blockquote>
+
+And the hypothesis, with the correct answer being **entailment**:
+<blockquote>
+Government subsidiary could reduce renewable energy cost
+</blockquote>
+The above hypothesis tests logical contextual reasoning.
+
+All three model gets it right.
+
+I tried a much longer one (939 words), almost 7 times longer than the first: 
+<blockquote>
+Thomas Young The Last True Know-It-All Thomas Young (1773-1829) contributed 63 articles to the Encyclopedia Britannica, including 46 biographical entries (mostly on scientists and classicists) and substantial essays on Bridge, Chromatics, Egypt, Languages and Tides. Was someone who could write authoritatively about so many subjects a polymath, a genius or a dilettante? In an ambitious new biography, Andrew Robinson argues that Young is a good contender for the epitaph the last man who knew everything. Young has competition, however: The phrase, which Robinson takes for his title, also serves as the subtitle of two other recent biographies....(omitted)....
+Very little evidence survives about the complexities of Youngs relationships with his mother and father. Robinson does not credit them, or anyone else, with shaping Youngs extraordinary mind. Despite the lack of details concerning Youngs relationships, however, anyone interested in what it means to be a genius should read this book.
+</blockquote>
+
+This time with more hypotheses
+<blockquote>
+1. All Youngs articles were published in Encyclopedia Britannica.(Contradiction)
+
+2. The last man who knew everything has also been claimed to other people. (Entailed)
+
+3. Young suffered from a disease in his later years. (Neutral)
+</blockquote>
+Hypothesis 1 and 2 may test the coreferential reasoning. 
+
+Results:
+Control R+: 3/3
+LLama 3: 3/3
+Mistral 7B: 1/3 (Gets third one)
+
+
+On a test case about temporal reasoning, with this hypothesis that tests temporal reasoning:
+>On average, produce worth 4,200 is thrown away every week.
+Control R+ fails while Llama and Mistral gets it right.
+
+On contextual understanding Llama 3 is the most consistent.
 
 
 ## What is all this?
